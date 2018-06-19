@@ -38,8 +38,9 @@ const NOT_SUPPORTED_ERROR_MSG =
 const allowedHdPaths = ["44'/60'", "44'/61'"];
 
 class LedgerWallet {
-  constructor(getNetworkId, path, askForOnDeviceConfirmation = false) {
+  constructor(getNetworkId, path, askForOnDeviceConfirmation = false, connTimeoutSeconds = 20) {
     this.askForOnDeviceConfirmation = askForOnDeviceConfirmation;
+    this.connTimeoutSeconds = connTimeoutSeconds;
     this.getNetworkId = getNetworkId;
     this.isU2FSupported = null;
     this.connectionOpened = false;
@@ -93,8 +94,8 @@ class LedgerWallet {
       // eslint-disable-next-line new-cap
       return new ledger.eth(
         isNode
-          ? await ledger.comm_node.create_async()
-          : await ledger.comm_u2f.create_async()
+          ? await ledger.comm_node.create_async(this.connTimeoutSeconds)
+          : await ledger.comm_u2f.create_async(this.connTimeoutSeconds)
       );
     }
   }
